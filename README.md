@@ -25,7 +25,7 @@ Create a file in `<nvim_config_dir>/after/plugins/<something>`.
 local client = vim.lsp.start_client {
   name = 'langserver',
   cmd = { '<location_of_binary>' },
-  -- on_att = require("??").on_attach,
+  -- on_attach = require("??").on_attach,
 }
 
 if not client then
