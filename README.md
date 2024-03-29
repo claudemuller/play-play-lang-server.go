@@ -23,7 +23,7 @@ go build cmd/main.go
 Create a file in `<nvim_config_dir>/after/plugins/<something>`.
 ```lua
 local client = vim.lsp.start_client {
-  name = 'langserver',
+  name = 'play-play-langserver',
   cmd = { '<location_of_binary>' },
   -- on_attach = require("??").on_attach,
 }

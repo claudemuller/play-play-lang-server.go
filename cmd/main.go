@@ -37,15 +37,7 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 
 	switch method {
 	case "initialize":
-		var req lsp.InitialiseRequest
-		if err := json.Unmarshal(content, &req); err != nil {
-			logger.Printf("Error parsing initialize request: %s", err)
-		}
-
-		logger.Printf("Connected to: %s %s", req.Params.ClientInfo.Name, req.Params.ClientInfo.Version)
-
-		msg := lsp.NewInitialiseResponse(req.ID)
-		writeResponse(writer, msg)
+		writeResponse(writer, lsp.HandleInitialise(content, logger))
 
 	case "textDocument/didOpen":
 		var req lsp.DidOpenTextDocumentNotification

@@ -1,5 +1,10 @@
 package lsp
 
+import (
+	"encoding/json"
+	"log"
+)
+
 type InitialiseRequest struct {
 	Request
 	Params InitialiseRequestParams `json:"params"`
@@ -37,11 +42,18 @@ type ServerCapabilities struct {
 	CompletionProvider map[string]interface{} `json:"completionProvider"`
 }
 
-func NewInitialiseResponse(id int) InitialiseResponse {
+func HandleInitialise(content []byte, logger *log.Logger) InitialiseResponse {
+	var req InitialiseRequest
+	if err := json.Unmarshal(content, &req); err != nil {
+		logger.Printf("Error parsing initialize request: %s", err)
+	}
+
+	logger.Printf("Connected to: %s %s", req.Params.ClientInfo.Name, req.Params.ClientInfo.Version)
+
 	return InitialiseResponse{
 		Response: Response{
 			RPC: "2.0",
-			ID:  &id,
+			ID:  &req.ID,
 		},
 		Result: InitialiseResult{
 			Capabilities: ServerCapabilities{
