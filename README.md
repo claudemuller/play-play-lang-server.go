@@ -1,5 +1,7 @@
 # Play-Play Language Server
 
+[![go](https://github.com/claudemuller/play-play-langserver.go/actions/workflows/go.yml/badge.svg)](https://github.com/claudemuller/play-play-langserver.go/actions/workflows/go.yml)
+
 A play-play implementation of the [Language Server Protocol](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/) in Go.
 
 ## Requirements
