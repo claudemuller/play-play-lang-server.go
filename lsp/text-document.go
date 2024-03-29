@@ -49,6 +49,16 @@ type Position struct {
 	Character int `json:"character"`
 }
 
+type Location struct {
+	URI   string `json:"uri"`
+	Range Range  `json:"range"`
+}
+
+type Range struct {
+	Start Position `json:"start"`
+	End   Position `json:"end"`
+}
+
 type HoverRequest struct {
 	Request
 	Params HoverParams `json:"params"`
@@ -64,5 +74,23 @@ type HoverResponse struct {
 }
 
 type HoverResult struct {
+	Contents string `json:"contents"`
+}
+
+type DefinitionRequest struct {
+	Request
+	Params DefinitionParams `json:"params"`
+}
+
+type DefinitionParams struct {
+	TextDocumentPositionParams
+}
+
+type DefinitionResponse struct {
+	Response
+	Result Location `json:"result"`
+}
+
+type DefinitionResult struct {
 	Contents string `json:"contents"`
 }

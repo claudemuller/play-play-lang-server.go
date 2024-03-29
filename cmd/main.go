@@ -55,7 +55,7 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 			logger.Printf("Error parsing didOpen request: %s", err)
 		}
 
-		logger.Printf("Opended: %s %s", req.Params.TextDocument.URI, req.Params.TextDocument.Text)
+		logger.Printf("Opended: %s", req.Params.TextDocument.URI)
 
 		state.OpenDocument(req.Params.TextDocument.URI, req.Params.TextDocument.Text)
 
@@ -65,7 +65,7 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 			logger.Printf("Error parsing didChange request: %s", err)
 		}
 
-		logger.Printf("Changed: %s %s", req.Params.TextDocument.URI, req.Params.ContentChanges)
+		logger.Printf("Changed: %s", req.Params.TextDocument.URI)
 
 		for _, change := range req.Params.ContentChanges {
 			state.UpdateDocument(req.Params.TextDocument.URI, change.Text)
@@ -77,16 +77,16 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 			logger.Printf("Error parsing hover request: %s", err)
 		}
 
-		res := lsp.HoverResponse{
-			Response: lsp.Response{
-				RPC: "2.0",
-				ID:  &req.ID,
-			},
+		res := state.Hover(req.ID, req.Params.TextDocument.URI, req.Params.Position)
+		writeResponse(os.Stdout, res)
 
-			Result: lsp.HoverResult{
-				Contents: "(ㆆ _ ㆆ)",
-			},
+	case "textDocument/definition":
+		var req lsp.DefinitionRequest
+		if err := json.Unmarshal(content, &req); err != nil {
+			logger.Printf("Error parsing definition request: %s", err)
 		}
+
+		res := state.Definition(req.ID, req.Params.TextDocument.URI, req.Params.Position)
 		writeResponse(os.Stdout, res)
 	}
 }
