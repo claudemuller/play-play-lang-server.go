@@ -40,7 +40,7 @@ func NewInitialiseResponse(id int) InitialiseResponse {
 		Result: InitialiseResult{
 			Capabilities: ServerCapabilities{},
 			ServerInfo: ServerInfo{
-				Name:    "langserver",
+				Name:    "play-play-langserver",
 				Version: "0.0.1",
 			},
 		},

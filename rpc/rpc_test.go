@@ -1,8 +1,9 @@
 package rpc_test
 
 import (
-	"langserver/rpc"
 	"testing"
+
+	"github.com/claudemuller/play-play-lang-server/rpc"
 )
 
 type encodingExample struct {

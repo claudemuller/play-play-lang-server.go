@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	logger := getLogger("/tmp/langserver.log")
+	logger := getLogger("/tmp/play-play-langserver.log")
 	logger.Println("Started...")
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -55,5 +55,5 @@ func getLogger(filename string) *log.Logger {
 		panic("File no good :(")
 	}
 
-	return log.New(logFile, "[langserver] ", log.Ldate|log.Ltime|log.Lshortfile)
+	return log.New(logFile, "[play-play-langserver] ", log.Ldate|log.Ltime|log.Lshortfile)
 }
