@@ -55,7 +55,17 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 
 		logger.Printf("Opended: %s", req.Params.TextDocument.URI)
 
-		state.OpenDocument(req.Params.TextDocument.URI, req.Params.TextDocument.Text)
+		diagnostics := state.OpenDocument(req.Params.TextDocument.URI, req.Params.TextDocument.Text)
+		writeResponse(writer, lsp.PublishDiagnosticsNotification{
+			Notification: lsp.Notification{
+				RPC:    "2.0",
+				Method: "textDocument/publishDiagnostics",
+			},
+			Params: lsp.PublishDiagnosticsParams{
+				URI:         req.Params.TextDocument.URI,
+				Diagnistics: diagnostics,
+			},
+		})
 
 	case "textDocument/didChange":
 		var req lsp.DidChangeTextDocumentNotification
@@ -66,7 +76,17 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 		logger.Printf("Changed: %s", req.Params.TextDocument.URI)
 
 		for _, change := range req.Params.ContentChanges {
-			state.UpdateDocument(req.Params.TextDocument.URI, change.Text)
+			diagnostics := state.UpdateDocument(req.Params.TextDocument.URI, change.Text)
+			writeResponse(writer, lsp.PublishDiagnosticsNotification{
+				Notification: lsp.Notification{
+					RPC:    "2.0",
+					Method: "textDocument/publishDiagnostics",
+				},
+				Params: lsp.PublishDiagnosticsParams{
+					URI:         req.Params.TextDocument.URI,
+					Diagnistics: diagnostics,
+				},
+			})
 		}
 
 	case "textDocument/hover":

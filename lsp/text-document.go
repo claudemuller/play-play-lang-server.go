@@ -172,3 +172,23 @@ type CompletionItem struct {
 	Detail        string `json:"detail"`
 	Documentation string `json:"documentation"`
 }
+
+// ------------------------------------------------------------------------------------------------
+//  Diagnostics
+
+type PublishDiagnosticsNotification struct {
+	Notification
+	Params PublishDiagnosticsParams `json:"params"`
+}
+
+type PublishDiagnosticsParams struct {
+	URI         string       `json:"uri"`
+	Diagnistics []Diagnostic `json:"diagnostics"`
+}
+
+type Diagnostic struct {
+	Range    Range  `json:"range"`
+	Severity int    `json:"severity"`
+	Source   string `json:"source"`
+	Message  string `json:"message"`
+}
