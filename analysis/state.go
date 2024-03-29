@@ -65,7 +65,7 @@ func (s *State) Definition(id int, uri string, pos lsp.Position) lsp.DefinitionR
 
 func (s *State) TextDocumentCodeAction(id int, uri string) lsp.TextDocumentCodeActionResponse {
 	text := s.Documents[uri]
-	actions := []lsp.CodeAction{}
+	var actions []lsp.CodeAction
 
 	for row, line := range strings.Split(text, "\n") {
 		idx := strings.Index(line, "VS Code")
@@ -104,6 +104,26 @@ func (s *State) TextDocumentCodeAction(id int, uri string) lsp.TextDocumentCodeA
 			ID:  &id,
 		},
 		Result: actions,
+	}
+
+	return res
+}
+
+func (s *State) TextDocumentCompletion(id int, uri string) lsp.CompletionResponse {
+	items := []lsp.CompletionItem{
+		{
+			Label:         "Neovim (BTW)",
+			Detail:        "Kewl editor",
+			Documentation: "Some documentation here.",
+		},
+	}
+
+	res := lsp.CompletionResponse{
+		Response: lsp.Response{
+			RPC: "2.0",
+			ID:  &id,
+		},
+		Result: items,
 	}
 
 	return res

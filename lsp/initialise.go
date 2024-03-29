@@ -30,10 +30,11 @@ type ServerInfo struct {
 }
 
 type ServerCapabilities struct {
-	TextDocumentSync   int  `json:"textDocumentSync"`
-	HoverProvider      bool `json:"hoverProvider"`
-	DefinitionProvider bool `json:"definitionProvider"`
-	CodeActionProvider bool `json:"codeActionProvider"`
+	TextDocumentSync   int                    `json:"textDocumentSync"`
+	HoverProvider      bool                   `json:"hoverProvider"`
+	DefinitionProvider bool                   `json:"definitionProvider"`
+	CodeActionProvider bool                   `json:"codeActionProvider"`
+	CompletionProvider map[string]interface{} `json:"completionProvider"`
 }
 
 func NewInitialiseResponse(id int) InitialiseResponse {
@@ -48,6 +49,7 @@ func NewInitialiseResponse(id int) InitialiseResponse {
 				HoverProvider:      true,
 				DefinitionProvider: true,
 				CodeActionProvider: true,
+				CompletionProvider: map[string]interface{}{},
 			},
 			ServerInfo: ServerInfo{
 				Name:    "play-play-langserver",

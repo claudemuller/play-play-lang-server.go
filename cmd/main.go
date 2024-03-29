@@ -95,6 +95,15 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 
 		res := state.TextDocumentCodeAction(req.ID, req.Params.TextDocument.URI)
 		writeResponse(writer, res)
+
+	case "textDocument/completion":
+		var req lsp.CompletionRequest
+		if err := json.Unmarshal(content, &req); err != nil {
+			logger.Printf("Error parsing completion request: %s", err)
+		}
+
+		res := state.TextDocumentCompletion(req.ID, req.Params.TextDocument.URI)
+		writeResponse(writer, res)
 	}
 }
 
