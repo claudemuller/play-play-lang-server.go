@@ -16,6 +16,6 @@ type Response struct {
 
 type Notification struct {
 	RPC    string `json:"jsonrpc"`
-	Method int    `json:"method"`
+	Method string `json:"method"`
 	// Params
 }

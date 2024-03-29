@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/claudemuller/play-play-lang-server/analysis"
 	"github.com/claudemuller/play-play-lang-server/lsp"
 	"github.com/claudemuller/play-play-lang-server/rpc"
 )
@@ -17,6 +18,8 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(rpc.Split)
 
+	state := analysis.NewState()
+
 	for scanner.Scan() {
 		msg := scanner.Bytes()
 		method, content, err := rpc.DecodeMessage(msg)
@@ -24,18 +27,18 @@ func main() {
 			logger.Printf("Error: %s", err)
 			continue
 		}
-		handleMsg(method, content, logger)
+		handleMsg(state, method, content, logger)
 	}
 }
 
-func handleMsg(method string, content []byte, logger *log.Logger) {
+func handleMsg(state analysis.State, method string, content []byte, logger *log.Logger) {
 	logger.Printf("Received msg with method: %s", method)
 
 	switch method {
 	case "initialize":
 		var req lsp.InitialiseRequest
 		if err := json.Unmarshal(content, &req); err != nil {
-			logger.Printf("Error parsing request: %s", err)
+			logger.Printf("Error parsing initialize request: %s", err)
 		}
 
 		logger.Printf("Connected to: %s %s", req.Params.ClientInfo.Name, req.Params.ClientInfo.Version)
@@ -50,10 +53,24 @@ func handleMsg(method string, content []byte, logger *log.Logger) {
 	case "textDocument/didOpen":
 		var req lsp.DidOpenTextDocumentNotification
 		if err := json.Unmarshal(content, &req); err != nil {
-			logger.Printf("Error parsing request: %s", err)
+			logger.Printf("Error parsing didOpen request: %s", err)
 		}
 
-		logger.Printf("Opended: %s %s", req.Params.TextDocument.URI, req.Params.TextDocument.Text)
+		logger.Printf("Opended: %s", req.Params.TextDocument.URI)
+
+		state.OpenDocument(req.Params.TextDocument.URI, req.Params.TextDocument.Text)
+
+	case "textDocument/didChange":
+		var req lsp.DidChangeTextDocumentNotification
+		if err := json.Unmarshal(content, &req); err != nil {
+			logger.Printf("Error parsing didChange request: %s", err)
+		}
+
+		logger.Printf("Changed: %s", req.Params.TextDocument.URI)
+
+		for _, change := range req.Params.ContentChanges {
+			state.UpdateDocument(req.Params.TextDocument.URI, change.Text)
+		}
 	}
 }
 
