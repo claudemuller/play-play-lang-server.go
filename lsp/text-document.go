@@ -16,25 +16,6 @@ type VersionedTextDocumentIdentifier struct {
 	Version int `json:"version"`
 }
 
-type DidOpenTextDocumentNotification struct {
-	Notification
-	Params DidOpenTextDocumentParams `json:"params"`
-}
-
-type DidOpenTextDocumentParams struct {
-	TextDocument TextDocumentItem `json:"textDocument"`
-}
-
-type DidChangeTextDocumentNotification struct {
-	Notification
-	Params DidChangeTextDocumentParams `json:"params"`
-}
-
-type DidChangeTextDocumentParams struct {
-	TextDocument   VersionedTextDocumentIdentifier  `json:"textDocument"`
-	ContentChanges []TextDocumentContentChangeEvent `json:"contentChanges"`
-}
-
 type TextDocumentContentChangeEvent struct {
 	Text string `json:"text"`
 }
@@ -59,6 +40,50 @@ type Range struct {
 	End   Position `json:"end"`
 }
 
+type Command struct {
+	Title     string        `json:"title"`
+	Command   string        `json:"command"`
+	Arguments []interface{} `json:"arguments,omitempty"`
+}
+
+type WorkspaceEdit struct {
+	// Filenames to TextEdits
+	Changes map[string][]TextEdit `json:"changes"`
+}
+
+type TextEdit struct {
+	Range   Range  `json:"range"`
+	NewText string `json:"newText"`
+}
+
+// ------------------------------------------------------------------------------------------------
+//  Did Open
+
+type DidOpenTextDocumentNotification struct {
+	Notification
+	Params DidOpenTextDocumentParams `json:"params"`
+}
+
+type DidOpenTextDocumentParams struct {
+	TextDocument TextDocumentItem `json:"textDocument"`
+}
+
+// ------------------------------------------------------------------------------------------------
+//  Did Change
+
+type DidChangeTextDocumentNotification struct {
+	Notification
+	Params DidChangeTextDocumentParams `json:"params"`
+}
+
+type DidChangeTextDocumentParams struct {
+	TextDocument   VersionedTextDocumentIdentifier  `json:"textDocument"`
+	ContentChanges []TextDocumentContentChangeEvent `json:"contentChanges"`
+}
+
+// ------------------------------------------------------------------------------------------------
+//  Hover
+
 type HoverRequest struct {
 	Request
 	Params HoverParams `json:"params"`
@@ -77,6 +102,9 @@ type HoverResult struct {
 	Contents string `json:"contents"`
 }
 
+// ------------------------------------------------------------------------------------------------
+//  Definitions
+
 type DefinitionRequest struct {
 	Request
 	Params DefinitionParams `json:"params"`
@@ -93,4 +121,31 @@ type DefinitionResponse struct {
 
 type DefinitionResult struct {
 	Contents string `json:"contents"`
+}
+
+// ------------------------------------------------------------------------------------------------
+//  Code Actions
+
+type CodeActionRequest struct {
+	Request
+	Params TextDocumentCodeActionParams `json:"params"`
+}
+
+type TextDocumentCodeActionParams struct {
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
+	Range        Range                  `json:"range"`
+	Context      CodeActionContext      `json:"context"`
+}
+
+type TextDocumentCodeActionResponse struct {
+	Response
+	Result []CodeAction `json:"result"`
+}
+
+type CodeActionContext struct{}
+
+type CodeAction struct {
+	Title   string         `json:"title"`
+	Edit    *WorkspaceEdit `json:"edit,omitempty"`
+	Command *Command       `json:"command,omitempty"`
 }

@@ -47,8 +47,6 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 		msg := lsp.NewInitialiseResponse(req.ID)
 		writeResponse(writer, msg)
 
-		logger.Print("Sent reply")
-
 	case "textDocument/didOpen":
 		var req lsp.DidOpenTextDocumentNotification
 		if err := json.Unmarshal(content, &req); err != nil {
@@ -78,7 +76,7 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 		}
 
 		res := state.Hover(req.ID, req.Params.TextDocument.URI, req.Params.Position)
-		writeResponse(os.Stdout, res)
+		writeResponse(writer, res)
 
 	case "textDocument/definition":
 		var req lsp.DefinitionRequest
@@ -87,7 +85,16 @@ func handleMsg(writer io.Writer, state analysis.State, method string, content []
 		}
 
 		res := state.Definition(req.ID, req.Params.TextDocument.URI, req.Params.Position)
-		writeResponse(os.Stdout, res)
+		writeResponse(writer, res)
+
+	case "textDocument/codeAction":
+		var req lsp.CodeActionRequest
+		if err := json.Unmarshal(content, &req); err != nil {
+			logger.Printf("Error parsing code action request: %s", err)
+		}
+
+		res := state.TextDocumentCodeAction(req.ID, req.Params.TextDocument.URI)
+		writeResponse(writer, res)
 	}
 }
 
