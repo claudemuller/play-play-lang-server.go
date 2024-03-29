@@ -116,15 +116,13 @@ func (s *State) TextDocumentCodeAction(id int, uri string) lsp.TextDocumentCodeA
 		}
 	}
 
-	res := lsp.TextDocumentCodeActionResponse{
+	return lsp.TextDocumentCodeActionResponse{
 		Response: lsp.Response{
 			RPC: "2.0",
 			ID:  &id,
 		},
 		Result: actions,
 	}
-
-	return res
 }
 
 func (s *State) TextDocumentCompletion(id int, uri string) lsp.CompletionResponse {
@@ -136,15 +134,13 @@ func (s *State) TextDocumentCompletion(id int, uri string) lsp.CompletionRespons
 		},
 	}
 
-	res := lsp.CompletionResponse{
+	return lsp.CompletionResponse{
 		Response: lsp.Response{
 			RPC: "2.0",
 			ID:  &id,
 		},
 		Result: items,
 	}
-
-	return res
 }
 
 func LineRange(line, start, end int) lsp.Range {

@@ -18,6 +18,12 @@ go mod tidy
 go build cmd/main.go
 ```
 
+## Run  tests
+
+```bash
+go test ./...
+```
+
 ## Attaching the LSP to Neovim
 
 Create a file in `<nvim_config_dir>/after/plugins/<something>`.
