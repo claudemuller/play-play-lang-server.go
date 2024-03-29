@@ -29,7 +29,9 @@ type ServerInfo struct {
 	Version string `json:"version"`
 }
 
-type ServerCapabilities struct{}
+type ServerCapabilities struct {
+	TextDocumentSync int `json:"textDocumentSync"`
+}
 
 func NewInitialiseResponse(id int) InitialiseResponse {
 	return InitialiseResponse{
@@ -38,7 +40,9 @@ func NewInitialiseResponse(id int) InitialiseResponse {
 			ID:  &id,
 		},
 		Result: InitialiseResult{
-			Capabilities: ServerCapabilities{},
+			Capabilities: ServerCapabilities{
+				TextDocumentSync: 1,
+			},
 			ServerInfo: ServerInfo{
 				Name:    "play-play-langserver",
 				Version: "0.0.1",
