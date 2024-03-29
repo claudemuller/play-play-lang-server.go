@@ -38,3 +38,31 @@ type DidChangeTextDocumentParams struct {
 type TextDocumentContentChangeEvent struct {
 	Text string `json:"text"`
 }
+
+type TextDocumentPositionParams struct {
+	TextDocument TextDocumentIdentifier `json:"textDocument"`
+	Position     Position               `json:"position"`
+}
+
+type Position struct {
+	Line      int `json:"line"`
+	Character int `json:"character"`
+}
+
+type HoverRequest struct {
+	Request
+	Params HoverParams `json:"params"`
+}
+
+type HoverParams struct {
+	TextDocumentPositionParams
+}
+
+type HoverResponse struct {
+	Response
+	Result HoverResult `json:"result"`
+}
+
+type HoverResult struct {
+	Contents string `json:"contents"`
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"io"
 	"log"
 	"os"
 
@@ -27,11 +28,11 @@ func main() {
 			logger.Printf("Error: %s", err)
 			continue
 		}
-		handleMsg(state, method, content, logger)
+		handleMsg(os.Stdout, state, method, content, logger)
 	}
 }
 
-func handleMsg(state analysis.State, method string, content []byte, logger *log.Logger) {
+func handleMsg(writer io.Writer, state analysis.State, method string, content []byte, logger *log.Logger) {
 	logger.Printf("Received msg with method: %s", method)
 
 	switch method {
@@ -44,9 +45,7 @@ func handleMsg(state analysis.State, method string, content []byte, logger *log.
 		logger.Printf("Connected to: %s %s", req.Params.ClientInfo.Name, req.Params.ClientInfo.Version)
 
 		msg := lsp.NewInitialiseResponse(req.ID)
-		reply := rpc.EncodeMessage(msg)
-		writer := os.Stdout
-		_, _ = writer.Write([]byte(reply))
+		writeResponse(writer, msg)
 
 		logger.Print("Sent reply")
 
@@ -56,7 +55,7 @@ func handleMsg(state analysis.State, method string, content []byte, logger *log.
 			logger.Printf("Error parsing didOpen request: %s", err)
 		}
 
-		logger.Printf("Opended: %s", req.Params.TextDocument.URI)
+		logger.Printf("Opended: %s %s", req.Params.TextDocument.URI, req.Params.TextDocument.Text)
 
 		state.OpenDocument(req.Params.TextDocument.URI, req.Params.TextDocument.Text)
 
@@ -66,12 +65,35 @@ func handleMsg(state analysis.State, method string, content []byte, logger *log.
 			logger.Printf("Error parsing didChange request: %s", err)
 		}
 
-		logger.Printf("Changed: %s", req.Params.TextDocument.URI)
+		logger.Printf("Changed: %s %s", req.Params.TextDocument.URI, req.Params.ContentChanges)
 
 		for _, change := range req.Params.ContentChanges {
 			state.UpdateDocument(req.Params.TextDocument.URI, change.Text)
 		}
+
+	case "textDocument/hover":
+		var req lsp.HoverRequest
+		if err := json.Unmarshal(content, &req); err != nil {
+			logger.Printf("Error parsing hover request: %s", err)
+		}
+
+		res := lsp.HoverResponse{
+			Response: lsp.Response{
+				RPC: "2.0",
+				ID:  &req.ID,
+			},
+
+			Result: lsp.HoverResult{
+				Contents: "(ㆆ _ ㆆ)",
+			},
+		}
+		writeResponse(os.Stdout, res)
 	}
+}
+
+func writeResponse(writer io.Writer, msg interface{}) {
+	reply := rpc.EncodeMessage(msg)
+	_, _ = writer.Write([]byte(reply))
 }
 
 func getLogger(filename string) *log.Logger {
